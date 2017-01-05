@@ -19,14 +19,14 @@ if not (defined libdeltav_var_def) {
 	if false lock throttle to 0.
 }
 
-declare function libdeltav_def {
+function libdeltav_def {
 	return true.
 }
 
 //if not (defined libmath_def) { run libmath. }
 
 // Update the DVTrack
-declare function UpdateDVTrack {
+function UpdateDVTrack {
 	local drymass is ship:drymass.
 	local totalmass is ship:mass.
 	if ldv_lastUpdateTime = time:seconds {
@@ -92,12 +92,12 @@ declare function UpdateDVTrack {
 }
 
 // update the DVTrack when staging, resets the mass and isp.
-declare function UpdateDVTrackStage {
+function UpdateDVTrackStage {
 	UpdateDVTrack().
 	return ldv_lastStageDeltaV.
 }
 
-declare function ResetDVTrack {
+function ResetDVTrack {
 	set ldv_totalDeltaV to 0.
 	set ldv_lastMass to -1.
 	set ldv_lastISP to 0.
@@ -106,7 +106,7 @@ declare function ResetDVTrack {
 	set ldv_lastDryMass to -1.
 }
 
-declare function GetDVAvail {
+function GetDVAvail {
 	return GetDVAvailAtTrtl(1).
     // local g0 is 9.80665.
 	// local isp is GetISP().
@@ -119,8 +119,8 @@ declare function GetDVAvail {
 	// return ln(ship:mass/(ship:mass - fuelmass))*g0*isp.
 }
 
-declare function GetDVAvailAtTrtl {
-	declare parameter trtl.
+function GetDVAvailAtTrtl {
+	parameter trtl.
     local g0 is 9.80665.
 	local isp is GetISPAtTrtl(trtl).
 	local liq is stage:liquidfuel.
@@ -131,47 +131,47 @@ declare function GetDVAvailAtTrtl {
 	return ln(ship:mass/max(ship:mass - fuelmass, 0.0001))*g0*isp.
 }
 
-declare function GetTotalDV {
+function GetTotalDV {
 	if ldv_totalDeltaV > 0 {
 		return ldv_totalDeltaV.
 	}
 	return 0.
 }
-declare function GetLastStageDV {
+function GetLastStageDV {
 	if ldv_totalDeltaV > 0 {
 		return ldv_lastStageDeltaV.
 	}
 	return 0.
 }
-declare function GetPreviousStagesDV {
+function GetPreviousStagesDV {
 	if ldv_totalDeltaV > 0 {
 		return ldv_previousStagesDeltaV.
 	}
 	return 0.
 }
-declare function GetSteeringLoss {
+function GetSteeringLoss {
 	return ldv_steeringloss.
 }
-declare function GetGravityLoss {
+function GetGravityLoss {
 	return ldv_gravityloss.
 }
 
-declare function RefreshEngines {
+function RefreshEngines {
 	list engines in ldv_engineList.
 }
 
-declare function GetISP {
+function GetISP {
 	return GetISPAtTrtl(1).
 }
 
-declare function GetISPAtTrtl {
-	declare parameter trtl.
+function GetISPAtTrtl {
+	parameter trtl.
 	local l is GetEngineParametersAtTrtl(trtl).
 	return l[0].
 }
 
-declare function GetEngineParametersAtTrtl {
-	declare parameter trtl.
+function GetEngineParametersAtTrtl {
+	parameter trtl.
 	//local elist is list().
 	local activeThrust is 0.
 	local ispCounter is 0.

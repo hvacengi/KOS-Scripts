@@ -3,15 +3,15 @@ run once libmath.
 
 //if not defined liblaunch_def {
 
-//declare function liblaunch_def {
+//function liblaunch_def {
 //	return true.
 //}
 function beep {
 	print char(7).
 }
 
-declare function getThrottleForTWR {
-	declare parameter twr.
+function getThrottleForTWR {
+	parameter twr.
 	list engines in elist.
 	local lockedThrust is 0.
 	local throttleThrust is 0.
@@ -30,8 +30,8 @@ declare function getThrottleForTWR {
 	return trtl.
 }
 
-declare function getAoALimitDirection {
-	declare parameter targetsteer, limit.
+function getAoALimitDirection {
+	parameter targetsteer, limit.
 	local v0 is ship:velocity:surface:normalized.
 	local v2 is targetsteer:vector.
 	if (vang(v0, v2) < limit) return targetsteer.
@@ -41,8 +41,8 @@ declare function getAoALimitDirection {
 	return lookdirup(v1, targetsteer:topvector).
 }
 
-declare function getSteeringAdjustVelocity {
-	declare parameter v1.
+function getSteeringAdjustVelocity {
+	parameter v1.
 	local v0 is ship:velocity:surface:normalized.
 	local dv is v1 - v0.
 	set vd_v0 to vecdraw(v(0,0,0), v0 * 50, red, "", 1, true).
@@ -51,7 +51,7 @@ declare function getSteeringAdjustVelocity {
 }
 
 global liblaunch_maxQ is 0.
-declare function pastMaxQ {
+function pastMaxQ {
 	if (ship:q < 0.95 * liblaunch_maxQ) {
 		return true.
 	}
@@ -65,7 +65,15 @@ function warpToLaunchPhaseAngle {
 	local phaseAngle0 is clamp360(getPhaseAngle(ship, tgt)) - 360.
 	local phaseAngleDelta is clamp360(phaseAngle1 - phaseAngle0).
 	local phaseAngle is phaseAngle0.
-	local dt is -phaseAngleDelta / ((360 / ship:body:rotationperiod) - (360 / tgt:orbit:period)).
+	local isChasing is true.
+	if (ship:body:rotationperiod < tgt:orbit:period) set isChasing to false.
+	local dt is 0.
+	if isChasing {
+		set dt to -phaseAngleDelta / ((360 / ship:body:rotationperiod) - (360 / tgt:orbit:period)).
+	}
+	else {
+		set dt to clamp360(-phaseAngleDelta) / ((360 / ship:body:rotationperiod) - (360 / tgt:orbit:period)).
+	}
 	alert("Current phase angle:    " + round(phaseAngle0)).
 	alert("Warping to phase angle: " + phaseAngle1).
 	alert("Phase angle delta:      " + round(phaseAngleDelta)).
@@ -148,7 +156,7 @@ function FindVesselHeight {
 }
 
 function defaultTurn {
-	declare parameter targetalt, targetinc, targettwr, pitchangle, pitchalt.
+	parameter targetalt, targetinc, targettwr, pitchangle, pitchalt.
 
 	// attitude control
 	sas off.
@@ -227,7 +235,7 @@ function getMechJebFlightAngle {
 }
 
 function velocityTurn {
-	declare parameter targetalt, targetinc, targettwr, pitchangle, pitchalt.
+	parameter targetalt, targetinc, targettwr, pitchangle, pitchalt.
 
 	error("Using Velocity Turn").
 
@@ -293,8 +301,8 @@ function velocityTurn {
 	}
 }
 
-declare function launch {
-	declare parameter targetalt, targetinc, targettwr, pitchangle, pitchalt, turnfunc is defaultTurn@.
+function launch {
+	parameter targetalt, targetinc, targettwr, pitchangle, pitchalt, turnfunc is defaultTurn@.
 	//global pitchalt is param_pitchalt.
 	global tagbase is core:part:tag.
 	global liblaunch_pitchangle is pitchangle.

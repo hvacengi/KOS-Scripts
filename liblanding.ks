@@ -51,31 +51,29 @@ function FindLowestPart {
 }
 function getThrottleForHeight
 {
-	parameter vel, acc, g, h.
-	// vel is the current vertical velocity
-	// acc is the current available vertical acceleration based on current pitch
-	// g is the local acceleration due to gravity
-	// h is the height, it is very important that this is calibrated to
-	// account for the offset of the bottom of the vessel from the CoM
+	parameter
+		vel, // the current vertical velocity
+		acc, // the current available vertical acceleration based on current pitch
+		g,	// the local acceleration due to gravity
+		h.	// the height, it is very important that this is calibrated to
+			// account for the offset of the bottom of the vessel from the CoM
+			// The script works fine if your offset adds extra height, but if
+			// you underestimate the offset the vessel will probably crash.
 	// negative values of tgtacc mean accelerating towards the body (down),
 	// positive values mean accelerating away from the body (up).
 	return getThrottleForHeightVf(vel, acc, g, h, 0).
-	// return getThrottleForHeightVf(vel, acc, g, h, 0.5).
-	// local tgtacc is 0.
-	// local thrtl is 0.
-	// set tgtacc to vel ^ 2 / 2 / max(h, 0.01).
-	// set thrtl to (tgtacc + g) / max(acc, 0.01).
-	// return thrtl.
 }
 function getThrottleForHeightVf
 {
-	parameter vel, acc, g, h, velFinal.
-	// vel is the current vertical velocity
-	// acc is the current available vertical acceleration based on current pitch
-	// g is the local acceleration due to gravity
-	// h is the height, it is very important that this is calibrated to
-    // velFinal is the desired final velocity.
-	// account for the offset of the bottom of the vessel from the CoM
+	parameter
+		vel, // the current vertical velocity
+		acc, // the current available vertical acceleration based on current pitch
+		g,	// the local acceleration due to gravity
+		h,	// the height, it is very important that this is calibrated to
+			// account for the offset of the bottom of the vessel from the CoM
+			// The script works fine if your offset adds extra height, but if
+			// you underestimate the offset the vessel will probably crash.
+		velFinal. //the desired final velocity.
 	// negative values of tgtacc mean accelerating towards the body (down),
 	// positive values mean accelerating away from the body (up).
 	local tgtacc is 0.

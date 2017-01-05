@@ -1,6 +1,6 @@
 @LAZYGLOBAL off.
 
-declare function libmath_def {
+function libmath_def {
 	return true.
 }
 
@@ -9,19 +9,26 @@ global libmath_debug is false.
 global PI is Constant():PI.
 global BaseE is Constant():E.
 
+global oneHour is 60 * 60.
+global sixHours is 6 * oneHour.
+global sixDays is 6 * sixHours.
+
+// Set up any global defaults for environment settings
+set steeringmanager:maxstoppingtime to 5. // steer faster
+
 function sign {
 	parameter number.
 	if number < 0 return -1.
 	return 1.
 }
 
-declare function quadratic {
-	declare parameter a, b, c.
+function quadratic {
+	parameter a, b, c.
 	return list(quadraticPlus(a, b, c), quadraticMinus(a, b, c)).
 }
 
-declare function quadraticPlus {
-	declare parameter a, b, c.
+function quadraticPlus {
+	parameter a, b, c.
 	//local tmp is round(b ^ 2 - 4 * a * c, 10).
 	//if tmp < 0 {
 		//ptp("quadratic error: " + (b ^ 2) + " < " + (4 * a * c)).
@@ -34,8 +41,8 @@ declare function quadraticPlus {
 	//return (-b + sqrt(b ^ 2 - 4 * a * c)) / (2 * a).
 }
 
-declare function quadraticMinus {
-	declare parameter a, b, c.
+function quadraticMinus {
+	parameter a, b, c.
 	//local tmp is round(b ^ 2 - 4 * a * c, 10).
 	//if tmp < 0 {
 		//ptp("quadratic error: " + (b ^ 2) + " < " + (4 * a * c)).
@@ -48,31 +55,31 @@ declare function quadraticMinus {
 	//return (-b - sqrt(b ^ 2 - 4 * a * c)) / (2 * a).
 }
 
-declare function quadraticMin {
-	declare parameter a, b, c.
+function quadraticMin {
+	parameter a, b, c.
 	local quad is quadratic(a, b, c).
 	return min(quad[0], quad[1]).
 }
 
-declare function quadraticMax {
-	declare parameter a, b, c.
+function quadraticMax {
+	parameter a, b, c.
 	local quad is quadratic(a, b, c).
 	return max(quad[0], quad[1]).
 }
 
-declare function clamp {
-	declare parameter input, minimum, maximum.
+function clamp {
+	parameter input, minimum, maximum.
 	return max(min(input, maximum), minimum).
 }
 
-declare function invclamp {
-	declare parameter input, minimum, maximum.
+function invclamp {
+	parameter input, minimum, maximum.
 	if (input < (minimum + maximum ) / 1) { return min(input, minimum). }
 	else { return max(input, maximum). }
 }
 
-declare function clamp360 {
-	declare parameter deg360.
+function clamp360 {
+	parameter deg360.
 	if (abs(deg360) > 360) { set deg360 to mod(deg360, 360). }
 	until deg360 > 0 {
 		set deg360 to deg360 + 360.
@@ -80,127 +87,132 @@ declare function clamp360 {
 	return deg360.
 }
 
-declare function clamp180 {
-	declare parameter deg180.
+function clamp180 {
+	parameter deg180.
 	set deg180 to clamp360(deg180).
 	//if deg > 180 { return 360 - deg. } // always returned positive, wanted to get negative, but not sure that I'm not exploiting the bug
 	if deg180 > 180 { return deg180 - 360. }
 	return deg180.
 }
 
-declare function clamp180Positive {
-	declare parameter deg.
+function clamp180Positive {
+	parameter deg.
 	set deg to clamp360(deg).
 	if deg > 180 { return 360 - deg. } // provide a function that is the same as the old bugged version of clamp180
 	return deg.
 }
 
 // return the component of vector fullv along vector includev.
-declare function vinc {
-	declare parameter includev, fullv.
+function vinc {
+	parameter includev, fullv.
 	return vxcl(vxcl(includev, fullv), fullv).
 }
 
-declare function ptp {
-	declare parameter str.
+function ptp {
+	parameter str.
 	local line to "T+" + round(missiontime):tostring:padright(5):replace(" ", "-") + "- " + str.
 	print line.
 	//hudtext(line, 5, 4, 40, red, false).
 	//log line to missionlog.
 }
 
-declare function alert {
-	declare parameter str.
+function alert {
+	parameter str.
 	// hudtext(str, 30, 3, 40, white, false).
 	hudtext(str, 30, 3, 18, white, false).
 	ptp(str).
 }
 
-declare function warn {
-	declare parameter str.
+function warn {
+	parameter str.
 	// hudtext(str, 60, 2, 40, yellow, false).
 	hudtext(str, 60, 2, 18, yellow, false).
 	ptp(str).
 }
 
-declare function error {
-	declare parameter str.
+function error {
+	parameter str.
 	// hudtext(str, 300, 2, 40, red, false).
 	hudtext(str, 300, 2, 18, red, false).
 	ptp(str).
 }
 
-declare function verbose {
-	declare parameter str.
+function verbose {
+	parameter str.
 	// hudtext(str, 15, 2, 40, green, false).
 	hudtext(str, 15, 2, 18, green, false).
 }
 
-declare function verbosetime {
-	declare parameter str, dt.
+function verbosetime {
+	parameter str, dt.
 	// hudtext(str, dt, 2, 40, green, false).
 	hudtext(str, dt, 2, 18, green, false).
 }
 
-declare function verboselong {
-	declare parameter str.
+function verboselong {
+	parameter str.
 	// hudtext(str, 45, 2, 40, green, false).
 	hudtext(str, 45, 2, 18, green, false).
 }
 
-declare function RadToDeg {
-	declare parameter radians.
+function debugprint {
+	parameter str.
+	print "  " + str.
+}
+
+function RadToDeg {
+	parameter radians.
 	return radians * 180 / PI.
 }
-declare function DegToRad {
-	declare parameter degrees.
+function DegToRad {
+	parameter degrees.
 	return degrees * PI / 180.
 }
 
-declare function Lerp {
-	declare parameter ratio, minimum, maximum.
+function Lerp {
+	parameter ratio, minimum, maximum.
 	return ratio * (minimum - maximum) + minimum.
 }
 
-declare function SinH {
-	declare parameter x.
+function SinH {
+	parameter x.
 	set x to DegToRad(x).
 	return (BaseE ^ x - BaseE ^ (-x)) / 2.
 }
 
-declare function CosH {
-	declare parameter x.
+function CosH {
+	parameter x.
 	set x to DegToRad(x).
 	return (BaseE ^ x + BaseE ^ (-x)) / 2.
 }
 
-declare function TanH {
-	declare parameter x.
+function TanH {
+	parameter x.
 	set x to DegToRad(x).
 	return (BaseE ^ x - BaseE ^ (-x)) / (BaseE ^ x + BaseE ^ (-x)).
 }
 
-declare function ArSinH {
-	declare parameter x.
+function ArSinH {
+	parameter x.
 	return RadToDeg(ln(x + sqrt(x ^ 2 + 1))).
 }
 
-declare function ArCosH {
-	declare parameter x.
+function ArCosH {
+	parameter x.
 	return RadToDeg(ln(x + sqrt((x ^ 2) - 1))).
 }
 
-declare function ArTanH {
-	declare parameter x.
+function ArTanH {
+	parameter x.
 	return RadToDeg(ln((1 + x) / (1 - x)) / 2).
 }
 
-declare function GetPolarDistance {
-	declare parameter r1, theta1, r2, theta2.
+function GetPolarDistance {
+	parameter r1, theta1, r2, theta2.
 	return sqrt(r1 ^ 2 + r2 ^ 2 - 2 * r1 * r2 * cos(theta2 - theta1)).
 }
 
-declare function ActivateAntennae {
+function ActivateAntennae {
 	if addons:rt:available {
 		local modList is ship:modulesnamed("ModuleRTAntenna").
 		for mod in modList {
@@ -225,7 +237,7 @@ declare function ActivateAntennae {
 	}
 }
 
-declare function OpenCargoBays {
+function OpenCargoBays {
 	local modList is ship:modulesnamed("ModuleCargoBay").
 	bays on.
 	// for mod in modList {
@@ -236,7 +248,7 @@ declare function OpenCargoBays {
 	// }
 }
 
-declare function DeploySolarPanels {
+function DeploySolarPanels {
 	local modList is ship:modulesnamed("ModuleDeployableSolarPanel").
 	panels on.
 	// for mod in modList {
@@ -244,7 +256,7 @@ declare function DeploySolarPanels {
 	// }
 }
 
-declare function RetractSolarPanels {
+function RetractSolarPanels {
 	local modList is ship:modulesnamed("ModuleDeployableSolarPanel").
 	panels off.
 	// for mod in modList {
@@ -252,21 +264,21 @@ declare function RetractSolarPanels {
 	// }
 }
 
-declare function DisarmParachutes {
+function DisarmParachutes {
 	local modList is ship:modulesnamed("ModuleParachute").
 	for mod in modList {
 		if mod:hasevent("Disarm") { mod:doevent("Disarm"). }
 	}
 }
 
-declare function DeployParachutes {
+function DeployParachutes {
 	local modList is ship:modulesnamed("ModuleParachute").
 	for mod in modList {
 		if mod:hasevent("Deploy Chute") { mod:doevent("Deploy Chute"). }
 	}
 }
 
-declare function DeployFairings {
+function DeployFairings {
 	local modList is ship:modulesnamed("ModuleProceduralFairing").
 	for mod in modList {
 		if mod:hasevent("Deploy") { mod:doevent("Deploy"). }
@@ -289,7 +301,8 @@ function GetAllModulesNamed {
 	return modules.
 }
 
-declare function WaitForSteering {
+function WaitForSteering {
+	parameter maxRollError is 5.
 	alert("Waiting for steering to settle").
 	//verbosetime("Waiting for steering to settle", 20).
 	local t1 is 0.
@@ -299,7 +312,7 @@ declare function WaitForSteering {
 		wait until ship:unpacked.
 	}
 	else wait 2.
-	until abs(steeringmanager:angleerror) < 2 and abs(steeringmanager:rollerror) < 5 {
+	until abs(steeringmanager:angleerror) < 2 and abs(steeringmanager:rollerror) < maxRollError {
 	// until vang(steering:vector, ship:facing:vector) < 2 and abs(steeringmanager:rollerror) < 5 {
 		set t1 to time:seconds.
 		wait until abs(steeringmanager:angleerror) < 1.
@@ -311,8 +324,8 @@ declare function WaitForSteering {
 	alert("Steering settled").
 }
 
-declare function HasFile{
-	declare parameter filename.
+function HasFile{
+	parameter filename.
 	return core:currentvolume:exists(filename).
 	local fl is list().
 	list files in fl.
@@ -322,8 +335,8 @@ declare function HasFile{
 	return false.
 }
 
-declare function GetFile{
-	declare parameter filename.
+function GetFile{
+	parameter filename.
 	local fl is list().
 	list files in fl.
 	for f in fl {
@@ -332,7 +345,7 @@ declare function GetFile{
 	return false.
 }
 
-declare function SetupPhasePrinting {
+function SetupPhasePrinting {
 	parameter getStatusNote is { return lm_StatusNote. }.
 	global lm_GetStatusNote is getStatusNote.
 	if not (defined lm_StatusNote) {
@@ -359,8 +372,8 @@ function DoPhasePrinting {
 	// SafePrintAt(lm_StatusNote, col, 2).
 }
 
-declare function SetStatusNote {
-	declare parameter message.
+function SetStatusNote {
+	parameter message.
 	if not (defined lm_StatusNote) {
 		global lm_StatusNote is "".
 	}
@@ -412,8 +425,8 @@ function SetWarnColor {
 	}
 }
 
-declare function WarpFor {
-	declare parameter dt.
+function WarpFor {
+	parameter dt.
 	local t1 is time:seconds + dt.
 	if dt < 30 {
 		warn("Wait time " + round(dt) + " is in the past, or < 30s.").
