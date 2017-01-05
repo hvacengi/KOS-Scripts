@@ -1,35 +1,35 @@
 @LAZYGLOBAL off.
 
-declare function liborbit_def {
+function liborbit_def {
 	return true.
 }
 
 global liborbit_debug is false.
 global liborbit_drawvectors is false.
 
-declare function getAFromPeriodMu {
-	declare parameter period, mu.
+function getAFromPeriodMu {
+	parameter period, mu.
 	return (((period / (2 * pi)) ^ 2) * mu) ^ (1 / 3).
 	return (period * sqrt(mu) / (2 * pi)) ^ (2 / 3).
 }
 
-declare function getOrbVel {
-	declare parameter r, a, mu.
+function getOrbVel {
+	parameter r, a, mu.
 	return sqrt(mu * (2 / r - 1 / a)).
 }
 
-declare function getOrbPer {
-	declare parameter a, mu.
+function getOrbPer {
+	parameter a, mu.
 	return 2 * pi * sqrt(a^3/mu).
 }
 
-declare function getOrbR {
-	declare parameter a, ta, e.
+function getOrbR {
+	parameter a, ta, e.
 	return a * (1 - e^2) / (1 + e * cos(ta)).
 }
 
-declare function getTA {
-	declare parameter r, a, e.
+function getTA {
+	parameter r, a, e.
 	local p is getOrbParameter(a, e).
 	// print p.
 	// print r.
@@ -39,22 +39,22 @@ declare function getTA {
 	//return arccos((p - r) / e / r).
 }
 
-declare function getOrbParameter {
-	declare parameter a, e.
+function getOrbParameter {
+	parameter a, e.
 	return a * (1 - e ^ 2).
 }
 
-declare function getOrbFlightPathAng {
-	declare parameter ta, e.
+function getOrbFlightPathAng {
+	parameter ta, e.
 	return arctan2(e * sin(ta), (1 + e * cos(ta))).
 }
 
-declare function getMeanMotion {
-	declare parameter mu, a.
+function getMeanMotion {
+	parameter mu, a.
 	return (mu / a ^ 3) ^ 0.5.
 }
 
-declare function getGeoLAN {
+function getGeoLAN {
 	local i is ship:obt:inclination.
 	local lat is ship:latitude.
 	local lon is ship:longitude.
@@ -62,21 +62,21 @@ declare function getGeoLAN {
 	return lon - dgamma.
 }
 
-declare function getPerpVelVecAt {
-	declare parameter ut.
+function getPerpVelVecAt {
+	parameter ut.
 	local rB is ship:body:position - positionat(ship, ut).
 	local vN is vcrs(velocityat(ship, ut):orbit, rB).
 	return vcrs(rB, vN):normalized.
 }
 
-declare function getHoriVelVecAt {
-	declare parameter ut.
+function getHoriVelVecAt {
+	parameter ut.
 	local rB is ship:body:position - positionat(ship, ut).
 	return vxcl(rB,velocityat(ship, ut):orbit).
 }
 
-declare function getHoriVelVecOrbitableAt0 {
-	declare parameter tgt, ut.
+function getHoriVelVecOrbitableAt0 {
+	parameter tgt, ut.
 	local pos0 is tgt:body:position.
 	local pos1 is positionat(tgt, ut).
 	local rB is pos1 - pos0.
@@ -92,14 +92,14 @@ declare function getHoriVelVecOrbitableAt0 {
 	return vxcl(rB,velocityat(ship, ut):orbit).
 }
 
-declare function getDistance {
-	declare parameter r1, ta1, lan1, aop1, r2, ta2, lan2, aop2.
+function getDistance {
+	parameter r1, ta1, lan1, aop1, r2, ta2, lan2, aop2.
 	return GetPolarDistance(r1, ta1 + lan1 + aop1, r2, ta2 + lan2 + aop2).
 }
 
 // return a maneuver node to
-declare function getNode {
-	declare parameter v1, v2, rB, ut.
+function getNode {
+	parameter v1, v2, rB, ut.
 	local v_delta is v2 - v1.
 	//verbose("v_delta: " + v_delta).
 	// print v_delta:mag.
@@ -121,8 +121,8 @@ declare function getNode {
 	return nd.
 }
 // return a maneuver node to
-declare function getNodeDv {
-	declare parameter v1, v_delta, rB, ut.
+function getNodeDv {
+	parameter v1, v_delta, rB, ut.
 	//verbose("v_delta: " + v_delta).
 	// local v_delta is v2 - v1.
 	// print v_delta:mag.
@@ -139,22 +139,22 @@ declare function getNodeDv {
 	return nd.
 }
 
-declare function fixLonShift {
-	declare parameter lon.
+function fixLonShift {
+	parameter lon.
 	return mod(lon + 360 + 180, 360) - 180.
 }
 
-declare function fixLon {
-	declare parameter lon.
+function fixLon {
+	parameter lon.
 	return mod(lon + 360 + 180, 360).
 }
-declare function etaToLAN {
-	declare parameter obt.
+function etaToLAN {
+	parameter obt.
 	local E1 is getObtE.
 }
 
-declare function getTAnom {
-	declare parameter eccentricity, ea.
+function getTAnom {
+	parameter eccentricity, ea.
 	set ea to clamp180(ea).
 	if eccentricity > 1 {
 		local ta is arccos((CosH(ea) - eccentricity) / (1 - eccentricity * CosH(ea))).
@@ -165,8 +165,8 @@ declare function getTAnom {
 	return clamp360(ta).
 }
 
-declare function getEAnom {
-	declare parameter eccentricity, trueanomaly.
+function getEAnom {
+	parameter eccentricity, trueanomaly.
 	if eccentricity > 1 {
 		set trueanomaly to clamp180(trueanomaly).
 		local E is ArCosH((eccentricity + cos(trueanomaly)) / (1 + eccentricity * cos(trueanomaly))).
@@ -178,8 +178,8 @@ declare function getEAnom {
 	return E.
 }
 
-declare function approxEAnom {
-	declare parameter ecc, ma.
+function approxEAnom {
+	parameter ecc, ma.
 	local done is false.
 	local ea_n is ma.
 	local ea_n1 is 0.
@@ -205,8 +205,8 @@ declare function approxEAnom {
 	return ea_n.
 }
 
-declare function getMAnom {
-	declare parameter eccentricity, EAnom.
+function getMAnom {
+	parameter eccentricity, EAnom.
 	if eccentricity > 1 {
 		return RadToDeg(eccentricity * SinH(EAnom)) - EAnom.
 	}
@@ -214,13 +214,13 @@ declare function getMAnom {
 	return ma.
 }
 
-declare function getEtaTrueAnom {
-	declare parameter trueanomaly.
+function getEtaTrueAnom {
+	parameter trueanomaly.
 	return getEtaTrueAnomOrbitable(trueanomaly, ship).
 }
 
-declare function getEtaTrueAnomOrbitable {
-	declare parameter ta, ves.
+function getEtaTrueAnomOrbitable {
+	parameter ta, ves.
 	// if (ta < ves:obt:trueanomaly) set ta to ta + 360.
 	local ecc is ves:obt:eccentricity.
 	local mu is ves:body:mu.
@@ -269,12 +269,12 @@ declare function getEtaTrueAnomOrbitable {
 	return eta.
 }
 
-declare function getEtaRadiusOrbitable {
-	declare parameter r, ves.
+function getEtaRadiusOrbitable {
+	parameter r, ves.
 }
 
-declare function getMatchIncNode {
-	declare parameter tgt.
+function getMatchIncNode {
+	parameter tgt.
 	local r1 to ship:position - ship:body:position.
 	local v1 to ship:velocity:orbit.
 	local h1 to vcrs(r1, v1).
@@ -283,7 +283,9 @@ declare function getMatchIncNode {
 	local h2 to vcrs(r2, v2).
 	local i_rel to vang(h1, h2).
 	local r_an to vcrs(h1, h2).
-	global vd_r_an is vecdraw(body:position, r_an, red, "Ascending node", 1, true).
+	if liborbit_drawvectors {
+		global vd_r_an is vecdraw(body:position, r_an, red, "Ascending node", 1, true).
+	}
 	local dta_an to vang(r1, r_an).
 	if vdot(vcrs(h1, r1), r_an) < 0 { set dta_an to clamp360(dta_an * -1). }
 	if dta_an > 180 { set dta_an to dta_an - 180. set i_rel to -1 * i_rel. }
@@ -301,54 +303,102 @@ declare function getMatchIncNode {
 	return nd.
 }
 
-declare function getChangeInc {
-	declare parameter i1, i2, lan1, lan2.
+function getChangeIncFromOrbit {
+	parameter orb1, orb2.
+	return getChangeInc(orb1:inclination, orb2:inclination, orb1:lan, orb2:lan).
+}
+
+function getChangeInc {
+	parameter i1, i2, lan1, lan2.
 	// based on http://www.braeunig.us/space/orbmech.htm#plnchng
 	if liborbit_debug {
-		ptp("i1: " + i1 + ", lan1: " + lan1).
-		ptp("i2: " + i2 + ", lan2: " + lan2).
+		ptp("GetChangeInc").
+		print "  i1: " + round(i1,3) + ", lan1: " + round(lan1, 4).
+		print "  i2: " + round(i2,3) + ", lan2: " + round(lan2, 4).
 	}
+	verbose("Calculating Inclination Change").
+	// This calculation returns the descending node instead of ascending node
+	// I suspect the discrepency is due to KSP using a left handed coordinate
+	// system, but I thought they would end up the same...
 	local a1 to sin(i1) * cos(lan1).
 	local a2 to sin(i1) * sin(lan1).
 	local a3 to cos(i1).
 	local b1 to sin(i2) * cos(lan2).
 	local b2 to sin(i2) * sin(lan2).
 	local b3 to cos(i2).
-	local xfrAng to arccos(a1 * b1 + a2 * b2 + a3 * b3). // relative inclination
+	local xfrAng to arccos(a1 * b1 + a2 * b2 + a3 * b3). // -(relative inclination)
 	local c1 to a2 * b3 - a3 * b2.
 	local c2 to a3 * b1 - a1 * b3.
 	local c3 to a1 * b2 - a2 * b1.
-	local xfrLon to arctan2(c2, c1) + 90. // universal longitude of ascending node
+	local xfrLon to arctan2(c2, c1) + 90. // universal longitude of descending node
 	if c1 > 0 { set xfrLon to xfrLon + 180. }
 	local xfrLat to arctan2(c3, sqrt(c1^2 + c2^2)). // geocentric latitude of ascending node
 	local az1 is arcsin(cos(i1)/cos(xfrLat)). // azimuth at AN of initial orbit
 	local az2 is arcsin(cos(i2)/cos(xfrLat)). // azimuth at AN of final orbit
-	if az2 < az1 { set xfrAng to -1 * xfrAng. } // random fix for xfrAng, that I honestly don't know if I even need anymore
-	local ta_an to clamp360(xfrLon - ship:obt:argumentofperiapsis - ship:obt:lan).
+	// I am now reletively confident that I can delete the following line, but not confident enough to actually do it
+	// if az2 < az1 { set xfrAng to -1 * xfrAng. } // random fix for xfrAng, that I honestly don't know if I even need anymore
+	// local ta_an to clamp360(xfrLon - ship:obt:argumentofperiapsis - ship:obt:lan). // old ta calc
+	local ta_an to getTAFromUlonOrbit(xfrLon, ship:obt).
 	if clamp360(ta_an - ship:obt:trueanomaly) > 180 { // use the DN instead of the AN if more than 180 degrees in front
 		set ta_an to clamp360(ta_an - 180).
-		set xfrAng to -1 * xfrAng.
-		verbose("switching to DN").
+		set xfrAng to -xfrAng.
+		verbose("Using AN").
+	}
+	else {
+		verbose("Using DN").
 	}
 	local ut_an to time:seconds + getEtaTrueAnomOrbitable(ta_an, ship).
 	if liborbit_debug {
-		ptp("inclination transfer angle: " + xfrAng).
-		print "c1: " + c1.
-		print "xfrLon: " + xfrLon.
-		print "xfrLat: " + xfrLat.
-		print "az1: " + az1.
-		print "az2: " + az2.
+		print "  xfrAng: " + xfrAng.
+		print "  c1: " + c1.
+		print "  xfrLon: " + xfrLon.
+		print "  xfrLat: " + xfrLat.
+		print "  az1: " + az1.
+		print "  az2: " + az2.
 	}
 	return list(ta_an, ut_an, xfrAng).
 }
 
-declare function getChangeIncNode {
-	declare parameter i2, lan2.
+function getTAFromUlonOrbit {
+	parameter
+		ulon, // universal longitude
+		orb. // the orbit object
+	return getTAFromULonAopLanInc(ulon, orb:argumentofperiapsis, orb:lan, orb:inclination).
+}
+
+function getTAFromULonAopLanInc {
+	parameter
+		ulon, // universal longitude
+		aop, // argument of periapsis
+		lan, // longitude of ascending node
+		inc. // inclination
+	local angleProj is ulon - lan. // angle between ascending node and the projection of position on equatorial plane
+	local phi is arctan2(tan(angleProj), cos(inc)). // central angle
+	local ta is clamp360(phi - aop). // true anomaly
+	local taRef is clamp360(ulon - aop - lan).
+	if liborbit_debug or (abs(ta - taRef) > 0.5) {
+		print "  inc:   " + inc.
+		print "  ta:    " + ta.
+		print "  taRef: " + taRef.
+		// error("ta calcs differ by: " + round(abs(ta - taRef), 5) + " degrees").
+	}
+	return clamp360(ta).
+}
+
+function GetChangeIncNode {
+	parameter i2, lan2.
 	wait 0.
 	local info is getChangeInc(ship:obt:inclination, i2, ship:obt:lan, lan2).
+	return getChangeIncNodeFromInfo(info).
+}
+
+function getChangeIncNodeFromInfo {
+	parameter info.
 	local ut_an is info[1].
 	local xfrAng is info[2].
-	ptp("inclination transfer angle: " + xfrAng).
+	// if liborbit_debug {
+	// 	ptp("inclination transfer angle: " + xfrAng).
+	// }
 	local r1 to positionat(ship, ut_an) - ship:body:position.
 	local v1 to velocityat(ship, ut_an):orbit.
 	local v1_h to vxcl(r1, v1).
@@ -356,13 +406,14 @@ declare function getChangeIncNode {
 	local v2_hp to v1_h * cos(xfrAng).
 	local v2_h to v2_hn + v2_hp.
 	local v_delta to v2_h - v1_h.
-	local nd to  getNodeDv(v1, v_delta, r1, ut_an).
+	local nd to getNodeDv(v1, v_delta, r1, ut_an).
 	add nd.
+	wait 0.
 	return nd.
 }
 
-declare function getInterceptNode {
-	declare parameter tgt.
+function getInterceptNode {
+	parameter tgt.
 	wait 0.
 	local m to 1.
 	local rz to tgt:obt:semimajoraxis.
@@ -388,8 +439,8 @@ declare function getInterceptNode {
 	return nd.
 }
 
-declare function getInterceptParameters {
-	declare parameter origin, tgt.
+function getInterceptParameters {
+	parameter origin, tgt.
 	local m to 1.
 	local rz to tgt:obt:semimajoraxis.
 	local a to (rz + origin:obt:semimajoraxis) / 2.
@@ -406,8 +457,8 @@ declare function getInterceptParameters {
 	return list(timetoburn, transferSpeed, burnoffset, transferDuration).
 }
 
-declare function getInterceptAtPeNode {
-	declare parameter tgt.
+function getInterceptAtPeNode {
+	parameter tgt.
 	local m to 1.
 	local rz to tgt:obt:periapsis.
 	local a to (rz + ship:obt:semimajoraxis) / 2.
@@ -442,16 +493,16 @@ declare function getInterceptAtPeNode {
 	return nd.
 }
 
-declare function getTAFromOrbitableUt {
-	declare parameter ves, ut.
+function getTAFromOrbitableUt {
+	parameter ves, ut.
 	local t1 is time:seconds.
 	local t2 is ut.
 	local dt is t2 - t1.
 	return getTAFromOrbitableEta(ves, dt).
 }
 
-declare function getTAFromOrbitableEta {
-	declare parameter ves, dt.
+function getTAFromOrbitableEta {
+	parameter ves, dt.
 	local ecc is ves:orbit:eccentricity.
 	local period is ves:orbit:period.
 	local ta1 is ves:orbit:trueanomaly.
@@ -463,8 +514,8 @@ declare function getTAFromOrbitableEta {
 	return clamp360(ta2).
 }
 
-declare function getUniversalLon {
-	declare parameter ves.
+function getUniversalLon {
+	parameter ves.
 	// local angle is ves:orbit:argumentofperiapsis + ves:orbit:trueanomaly.
 	// local ret is ves:orbit:lan + arctan(cos(ves:orbit:inclination) * tan(angle))).
 	// if angle > 90 and angle < 270 set ret to ret + 180.
@@ -473,8 +524,8 @@ declare function getUniversalLon {
 	// return clamp360(ves:orbit:lan + ves:orbit:argumentofperiapsis + ves:orbit:trueanomaly).
 }
 
-declare function getUniversalLonFromTA {
-	declare parameter ves, ta.
+function getUniversalLonFromTA {
+	parameter ves, ta.
 	local angle is ves:orbit:argumentofperiapsis + ta.
 	// print "angle: " + angle.
 	local ret is ves:orbit:lan + arctan(cos(ves:orbit:inclination) * tan(angle)).
@@ -484,13 +535,13 @@ declare function getUniversalLonFromTA {
 	// return clamp360(ves:orbit:lan + ves:orbit:argumentofperiapsis + ta).
 }
 
-declare function getPhaseAngleAt {
-	declare parameter ves, tgt, ut.
+function getPhaseAngleAt {
+	parameter ves, tgt, ut.
 	return clamp360(getPhaseAngleAt2(ves, tgt, ut)).
 }
 
-declare function getPhaseAngleAt1 {
-	declare parameter ves, tgt, ut.
+function getPhaseAngleAt1 {
+	parameter ves, tgt, ut.
 	// This method uses actual position vectors to find the phase angle
 	// For vessels in different planes it is possible for vessels with the same
 	// universal longitude to show a phase angle, equal to their relative inclination
@@ -504,8 +555,8 @@ declare function getPhaseAngleAt1 {
 	return angle.
 }
 
-declare function getPhaseAngleAt2 {
-	declare parameter ves, tgt, ut.
+function getPhaseAngleAt2 {
+	parameter ves, tgt, ut.
 	// This method compares universal longitude when calculating phase angle,
 	// such that it is plane independant and may require a plane change in order
 	// to actually intercept the target
@@ -521,8 +572,8 @@ function getEtaToPhaseAngle {
 	local complete is false.
 }
 
-declare function getPhaseAngle {
-	declare parameter ves, tgt.
+function getPhaseAngle {
+	parameter ves, tgt.
 	local vesULon is getUniversalLon(ves).
 	local tgtULon is getUniversalLon(tgt).
 	// print vesULon.
@@ -530,8 +581,8 @@ declare function getPhaseAngle {
 	return clamp180(tgtULon - vesULon).
 }
 
-declare function getCircNodeAt {
-	declare parameter ut.
+function getCircNodeAt {
+	parameter ut.
 	local rB is positionat(ship, ut) - ship:body:position.
 	local vel is getHoriVelVecAt(ut).
 	if (liborbit_drawvectors) {
@@ -546,8 +597,8 @@ declare function getCircNodeAt {
 	return nd.
 }
 
-declare function getApsisNodeAt {
-	declare parameter apsis, ut.
+function getApsisNodeAt {
+	parameter apsis, ut.
 	local rB is positionat(ship, ut) - ship:body:position.
 	local vel is getHoriVelVecAt(ut).
 	if (liborbit_drawvectors) {
@@ -563,8 +614,8 @@ declare function getApsisNodeAt {
 	return nd.
 }
 
-declare function getSMANodeAt {
-	declare parameter a, ut.
+function getSMANodeAt {
+	parameter a, ut.
 	local rB is positionat(ship, ut) - ship:body:position.
 	local vel is getHoriVelVecAt(ut).
 	if (liborbit_drawvectors) {
@@ -579,8 +630,8 @@ declare function getSMANodeAt {
 	return nd.
 }
 
-declare function getSmaAopeNodeAt {
-	declare parameter sma2, aop2, e2, ut.
+function getSmaAopeNodeAt {
+	parameter sma2, aop2, e2, ut.
 	wait 0.
 	local r1 is positionat(ship, ut) - ship:body:position.
 	local v1 is velocityat(ship, ut):orbit.
@@ -601,14 +652,14 @@ declare function getSmaAopeNodeAt {
 	return nd.
 }
 
-declare function hasNextNode {
+function hasNextNode {
 	if ship = kuniverse:activevessel {
 		return hasnode.
 	}
 	return false.
 }
 
-declare function clearNodes {
+function clearNodes {
 	//ship:makeactive(). wait 1.
 	if ship = kuniverse:activevessel {
 		if hasnode {
@@ -620,8 +671,8 @@ declare function clearNodes {
 	}
 }
 
-declare function getAzForInc {
-	declare parameter i.
+function getAzForInc {
+	parameter i.
 	// cos i = cos Φ sin β
 	// print i.
 	// print ship:latitude.
@@ -645,8 +696,8 @@ declare function getAzForInc {
 	return az_adj.
 }
 
-declare function getAzForInc2 {
-	declare parameter i.
+function getAzForInc2 {
+	parameter i.
 	// cos i = cos Φ sin β
 	//local az is arcsin(cos(i) / cos(ship:latitude)).
 	//if (az < 0) { set az to 180 - az. }

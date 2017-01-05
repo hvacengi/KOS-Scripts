@@ -292,6 +292,20 @@ function ReleaseClamps {
 	}
 }
 
+function StartFuelCells {
+	local modlist is ship:modulesnamed("ModuleResourceConverter").
+	for mod in modList {
+		if mod:hasfield("fuel cell") = "Fuel Cell" and mod:hasevent("Start Converter") { mod:doevent("Start Converter"). }
+	}
+}
+
+function StopFuelCells {
+	local modlist is ship:modulesnamed("ModuleResourceConverter").
+	for mod in modList {
+		if mod:hasfield("fuel cell") and mod:hasevent("Stop Converter") { mod:doevent("Stop Converter"). }
+	}
+}
+
 function GetAllModulesNamed {
 	parameter part, name.
 	local modules is list().
@@ -474,4 +488,65 @@ function WarpForLegacy {
 		}
 		wait until ship:unpacked.
 	}
+}
+function doPendingLaunch {
+	parameter craftName, site, title.
+	alert("Launching new " + title).
+	if (ship = kuniverse:activevessel and ContinueUnlessAnyKey(30, "initiating auto launch sequence") and ship = kuniverse:activevessel)
+	{
+		local template to kuniverse:getcraft(craftName, site).
+		kuniverse:launchcraft(template).
+		wait 5.
+	}
+	return false.
+}
+function WaitForAnyKey {
+	terminal:input:clear.
+	OpenTerminal().
+	alert("Press any key to continue...").
+	beep().
+	wait until terminal:input:haschar.
+	debugprint("Continuing!").
+	terminal:input:clear.
+}
+function ContinueUnlessAnyKey {
+	parameter
+		duration, // The timeout before returning true regardless of input
+		message. // The description of the event that may be aborted
+	alert("Waiting " + duration + "s before " + message).
+	debugprint("Press any key or toggle 'abort' to abort").
+	OpenTerminal().
+	local endTime is missiontime + duration.
+	global waitComplete is false.
+	local nextWaitEta is 10.
+	local doAbort is false.
+	on (terminal:input:haschar or waitComplete) {
+		if not waitComplete {
+			set doAbort to true.
+			set waitComplete to true.
+		}
+		return false.
+	}
+	on missiontime {
+		if endTime - missiontime <= nextWaitEta {
+			verbose(nextWaitEta + " seconds...").
+			set nextWaitEta to floor(nextWaitEta / 2).
+			if nextWaitEta < 1 {
+				set waitComplete to true.
+			}
+		}
+		return not waitComplete.
+	}
+	wait until waitComplete.
+	wait 0.1.
+	return not doAbort.
+}
+function beep {
+	print char(7).
+}
+function CloseTerminal {
+	core:doaction("Close Terminal", true).
+}
+function OpenTerminal {
+	core:doaction("Open Terminal", true).
 }
